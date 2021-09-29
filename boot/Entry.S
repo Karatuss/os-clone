@@ -8,4 +8,4 @@
         mov r0, r1
     vector_end:
         .space 1024, 0
-.end        
+.end
