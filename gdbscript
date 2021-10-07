@@ -1,0 +1,5 @@
+# connect debugging port
+target remote :1234
+
+# load symbols from executable files
+file build/navilos.axf
