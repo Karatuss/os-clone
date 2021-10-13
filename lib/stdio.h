@@ -4,6 +4,9 @@
 #include "stdint.h"
 #include "stdarg.h"
 
+
+#define NULL    0
+
 typedef enum utoa_t {
     utoa_dec = 10,
     utoa_hex = 16
