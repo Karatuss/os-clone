@@ -35,7 +35,7 @@ uint32_t vsprintf(char *buf, const char *format, va_list arg)
     uint32_t uint;
     uint32_t hex;
 
-    for (uint32_t i = 0; i < format[i]; i++) {
+    for (uint32_t i = 0; format[i]; i++) {
         if (format[i] == '%') {
             i++;
             switch (format[i]) {
