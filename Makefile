@@ -14,19 +14,22 @@ MAP_FILE = build/navilos.map
 ASM_SRCS = $(wildcard boot/*.S)
 ASM_OBJS = $(patsubst boot/%.S, build/%.os, $(ASM_SRCS))
 
-VPATH = boot \
-		hal/$(TARGET) \
-		lib
+VPATH = boot			\
+		hal/$(TARGET)	\
+		lib				\
+		kernel	
 
 C_SRCS  = $(notdir $(wildcard boot/*.c))
 C_SRCS += $(notdir $(wildcard hal/$(TARGET)/*.c))
 C_SRCS += $(notdir $(wildcard lib/*.c))
+C_SRCS += $(notdir $(wildcard kernel/*.c))
 C_OBJS = $(patsubst %.c, build/%.o, $(C_SRCS))
 
 INC_DIRS = -I include		\
 		   -I hal			\
 		   -I hal/$(TARGET) \
-		   -I lib
+		   -I lib			\
+		   -I kernel
 
 
 CFLAGS = -c -g -std=c11
@@ -35,7 +38,7 @@ LDFLAGS = -nostartfiles -nostdlib -nodefaultlibs -static -lgcc
 navilos = build/navilos.axf
 navilos_bin = build/navilos.bin
 
-.PHONY = all clean run debug gdb
+.PHONY = all clean run debug gdb kill
 
 all: $(navilos)
 

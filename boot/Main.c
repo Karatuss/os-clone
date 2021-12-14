@@ -7,6 +7,7 @@
 #include "HalInterrupt.h"
 #include "HalTimer.h"
 
+#include "Kernel.h"
 #include "task.h"
 
 static void Hw_init(void);
@@ -30,7 +31,7 @@ int main()
     putstr("Hello World!\n");
 
     Printf_test();
-    Timer_test();
+    // Timer_test();    // I'll activate this back when the timer device works nomally.
 
     Kernel_init();
 
@@ -86,20 +87,36 @@ static void Kernel_init(void)
     taskId = Kernel_task_create(User_task2);
     if (NOT_ENOUGH_TASK_NUM == taskId)
         putstr("Task2 creation failed\n");
+
+    Kernel_start();
 }
 
 void User_task0(void)
 {
-    debug_printf("User Task #0\n");
-    while (true);
+    uint32_t local = 0;
+
+    while (true) {
+        debug_printf("User Task #0 SP=0x%x\n", &local);
+        Kernel_yield();
+    }
 }
+
 void User_task1(void)
 {
-    debug_printf("User Task #1\n");
-    while (true);
+    uint32_t local = 0;
+
+    while (true) {
+        debug_printf("User Task #1 SP=0x%x\n", &local);
+        Kernel_yield();
+    }
 }
+
 void User_task2(void)
 {
-    debug_printf("User Task #2\n");
-    while (true);
+    uint32_t local = 0;
+
+    while (true) {
+        debug_printf("User Task #2 SP=0x%x\n", &local);
+        Kernel_yield();
+    }
 }
