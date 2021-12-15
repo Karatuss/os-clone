@@ -44,6 +44,7 @@ all: $(navilos)
 
 clean:
 	@rm -rf build
+	@rm -rf boot/Entry.bin boot/Entry.o
 
 run: $(navilos)
 	qemu-system-arm -M realview-pb-a8 \

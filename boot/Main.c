@@ -31,7 +31,7 @@ int main()
     putstr("Hello World!\n");
 
     Printf_test();
-    // Timer_test();    // I'll activate this back when the timer device works nomally.
+    // Timer_test();    // I'll activate this back when the timer device works normally.
 
     Kernel_init();
 
@@ -75,6 +75,7 @@ static void Kernel_init(void)
     uint32_t taskId;
 
     Kernel_task_init();
+    Kernel_event_flag_init();
 
     taskId = Kernel_task_create(User_task0);
     if (NOT_ENOUGH_TASK_NUM == taskId)
@@ -93,30 +94,52 @@ static void Kernel_init(void)
 
 void User_task0(void)
 {
+    // TEST_USER_TASK(0);
     uint32_t local = 0;
 
+    debug_printf("User task #0 SP=0x%x\n", &local);
+
     while (true) {
-        debug_printf("User Task #0 SP=0x%x\n", &local);
+        KernelEventFlag_t handle_event = Kernel_wait_events(KernelEventFlag_UartIn|KernelEventFlag_CmdOut);
+        switch (handle_event) {
+        case KernelEventFlag_UartIn:
+            debug_printf("\nEvent handled by Task0\n");
+            Kernel_send_events(KernelEventFlag_CmdIn);
+            break;
+        case KernelEventFlag_CmdOut:
+            debug_printf("\nCmdOut Event by Task0\n");
+            break;
+        }
         Kernel_yield();
     }
 }
 
 void User_task1(void)
 {
+    // TEST_USER_TASK(1);
     uint32_t local = 0;
 
+    debug_printf("User task #1 SP=0x%x\n", &local);
+
     while (true) {
-        debug_printf("User Task #1 SP=0x%x\n", &local);
+        KernelEventFlag_t handle_event = Kernel_wait_events(KernelEventFlag_CmdIn);
+        switch (handle_event) {
+        case KernelEventFlag_CmdIn:
+            debug_printf("\nEvent handled by Task1\n");
+            break;
+        }
         Kernel_yield();
     }
 }
 
 void User_task2(void)
 {
+    // TEST_USER_TASK(2);
     uint32_t local = 0;
 
+    debug_printf("User task #2 SP=0x%x\n", &local);
+
     while (true) {
-        debug_printf("User Task #2 SP=0x%x\n", &local);
         Kernel_yield();
     }
 }
