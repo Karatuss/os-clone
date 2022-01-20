@@ -59,16 +59,17 @@ static void Printf_test(void)
     debug_printf("dec=%u hex=%x\n", 0xff, 0xff);
     debug_printf("print zero %u, overflow %u\n\n", 0, -1);
     debug_printf("SYSCTRL0 %x\n", *sysctrl0);
+    debug_printf("enter's ascii code: %u\n", '\n');
 }
 
 // not working now
-static void Timer_test(void)
-{
-    while (true) {
-        debug_printf("current count: %u\n", Hal_timer_get_1ms_counter());
-        delay(100);
-    }
-}
+// static void Timer_test(void)
+// {
+//     while (true) {
+//         debug_printf("current count: %u\n", Hal_timer_get_1ms_counter());
+//         delay(100);
+//     }
+// }
 
 static void Kernel_init(void)
 {
@@ -96,15 +97,38 @@ void User_task0(void)
 {
     // TEST_USER_TASK(0);
     uint32_t local = 0;
-
     debug_printf("User task #0 SP=0x%x\n", &local);
+
+    uint8_t  cmdBuf[16] = {0};
+    uint32_t cmdBufIdx = 0;
+    uint8_t  uartch = 0;
 
     while (true) {
         KernelEventFlag_t handle_event = Kernel_wait_events(KernelEventFlag_UartIn|KernelEventFlag_CmdOut);
+
         switch (handle_event) {
         case KernelEventFlag_UartIn:
-            debug_printf("\nEvent handled by Task0\n");
-            Kernel_send_events(KernelEventFlag_CmdIn);
+            // debug_printf("\nEvent handled by Task0\n");
+            // Kernel_send_events(KernelEventFlag_CmdIn);
+
+            Kernel_recv_msg(KernelMsgQ_Task0, &uartch, 1);
+
+            // debug_printf("\nenter's ascii code: %u\n", (uint32_t)uartch);         // teeeeeeeeeeeest coooooooooooooodeeeeeeeeeeeee!
+
+            if (uartch == '\r') {   // check the input is enter key.
+                cmdBuf[cmdBufIdx] = '\0';
+
+                Kernel_send_msg(KernelMsgQ_Task1, &cmdBufIdx, 1);
+                Kernel_send_msg(KernelMsgQ_Task1, cmdBuf, cmdBufIdx);
+                Kernel_send_events(KernelEventFlag_CmdIn);
+                // debug_printf("I'm here!------------------------\n");
+
+                cmdBufIdx = 0;
+            } else {
+                cmdBuf[cmdBufIdx++] = uartch;
+                cmdBufIdx %= 16;
+                // debug_printf("\ncmdBuf: %s\n", cmdBuf);
+            }
             break;
         case KernelEventFlag_CmdOut:
             debug_printf("\nCmdOut Event by Task0\n");
@@ -121,11 +145,18 @@ void User_task1(void)
 
     debug_printf("User task #1 SP=0x%x\n", &local);
 
+    uint8_t cmdlen = 0;
+    uint8_t cmd[16] = {0};
+
     while (true) {
         KernelEventFlag_t handle_event = Kernel_wait_events(KernelEventFlag_CmdIn);
         switch (handle_event) {
         case KernelEventFlag_CmdIn:
-            debug_printf("\nEvent handled by Task1\n");
+            memclr(cmd, 16);
+            Kernel_recv_msg(KernelMsgQ_Task1, &cmdlen, 1);
+            Kernel_recv_msg(KernelMsgQ_Task1, cmd, cmdlen);
+            // debug_printf("\nEvent handled by Task1\n");
+            debug_printf("\n[Task1] Recv Cmd: %s\n", cmd);
             break;
         }
         Kernel_yield();

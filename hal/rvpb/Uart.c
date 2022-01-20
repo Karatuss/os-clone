@@ -56,8 +56,9 @@ static void interrupt_handler(void)
     uint8_t ch = Hal_uart_get_char();
     Hal_uart_put_char(ch);
 
-    Kernel_send_events(KernelEventFlag_UartIn|KernelEventFlag_CmdIn);     // connect interrupt and event
+    Kernel_send_msg(KernelMsgQ_Task0, &ch, 1);
+    Kernel_send_events(KernelEventFlag_UartIn);     // connect interrupt and event
 
-    if (ch == 'X')
-        Kernel_send_events(KernelEventFlag_CmdOut);
+    // if (ch == 'X')
+    //     Kernel_send_events(KernelEventFlag_CmdOut);
 }
