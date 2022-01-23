@@ -1,5 +1,6 @@
 ARCH = armv7-a
-MCPU = cortex-a8
+MCPU = cortex-a8 # cortex-a9 # 
+MACHINE = realview-pb-a8 # vexpress-a9
 
 TARGET = rvpb
 
@@ -38,6 +39,7 @@ LDFLAGS = -nostartfiles -nostdlib -nodefaultlibs -static -lgcc
 navilos = build/navilos.axf
 navilos_bin = build/navilos.bin
 
+
 .PHONY = all clean run debug gdb kill
 
 all: $(navilos)
@@ -47,12 +49,12 @@ clean:
 	@rm -rf boot/Entry.bin boot/Entry.o
 
 run: $(navilos)
-	qemu-system-arm -M realview-pb-a8 \
+	qemu-system-arm -M $(MACHINE) \
 		-kernel $(navilos) \
 		-nographic
 
 debug: $(navilos)
-	qemu-system-arm -M realview-pb-a8 \
+	qemu-system-arm -M $(MACHINE) \
 		-kernel $(navilos) \
 		-nographic \
 		-S -gdb tcp::1234,ipv4
@@ -64,7 +66,7 @@ kill:
 	kill -9 `ps aux | grep qemu | awk 'NR==1{print $$2}'`
 
 restart:
-	make kill && make clean && make run;
+	make kill 2> /dev/null; make clean; make run;
 	
 
 $(navilos): $(ASM_OBJS) $(C_OBJS) $(LINKER_SCRIPT)

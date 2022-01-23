@@ -5,7 +5,7 @@
 #include "HalTimer.h"
 #include "HalInterrupt.h"
 
-Timer_t *Timer;
+extern volatile Timer_t *Timer;
 
 static void interrupt_handler(void);
 
@@ -18,7 +18,7 @@ void Hal_timer_init(void)
   Timer->timerxcontrol.bits.TimerMode = 0;
   Timer->timerxcontrol.bits.OneShot = 0;
   Timer->timerxcontrol.bits.TimerSize = 0;
-  Timer->timerxcontrol.bits.TimerPre = 0;
+  Timer->timerxcontrol.bits.TimerPre = 0;   
   Timer->timerxcontrol.bits.IntEnable = 1;
   Timer->timerxload = 0;
   Timer->timerxvalue = 0xFFFFFFFF;
@@ -27,6 +27,11 @@ void Hal_timer_init(void)
   Timer->timerxcontrol.bits.TimerMode = TIMER_PERIOIC;
   Timer->timerxcontrol.bits.TimerSize = TIMER_32BIT_COUNTER;
   Timer->timerxcontrol.bits.OneShot = 0;
+  /**
+   * TimerPre - 
+   * 4 scales of prescale, clock is divided by 16.
+   * derive to PRESCALE_div value. zero means 1.
+   */
   Timer->timerxcontrol.bits.TimerPre = 0;
   Timer->timerxcontrol.bits.IntEnable = 1;
 

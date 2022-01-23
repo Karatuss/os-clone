@@ -33,7 +33,7 @@ typedef union TimerXMIS_t {
   } bits;
 } TimerXMIS_t;
 
-typedef union Timer_t {
+typedef struct Timer_t {
   uint32_t        timerxload;     // 0x00
   uint32_t        timerxvalue;    // 0x04
   TimerXControl_t timerxcontrol;  // 0x08
@@ -52,6 +52,7 @@ typedef union Timer_t {
 #define TIMER_16BIT_COUNTER 0
 #define TIMER_32BIT_COUNTER 1
 
-#define TIMER_10HZ_INTERVAL (32768 * 4)
+/* I have tested the value below by experiment with adjusting */
+#define TIMER_10HZ_INTERVAL (25000 * 4) // (32768 * 4)
 
 #endif  /* HAL_RVPB_TIMER_H_ */
