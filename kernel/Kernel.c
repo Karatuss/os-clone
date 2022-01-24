@@ -1,6 +1,7 @@
 #include "memio.h"
 #include "Kernel.h"
 #include "task.h"
+#include "synch.h"
 
 void Kernel_start(void)
 {
@@ -72,4 +73,35 @@ uint32_t Kernel_recv_msg(KernelMsgQ_t Qname, void *out_data, uint32_t count)
     }
 
     return count;
+}
+
+void Kernel_lock_sem(void)
+{
+    while (Kernel_sem_test() == false)
+        Kernel_yield();
+}
+
+void Kernel_unlock_sem(void)
+{
+    Kernel_sem_release();
+}
+
+void Kernel_lock_mutex(void)
+{
+    while (true) {
+        uint32_t current_task_id = Kernel_task_get_current_task_id();
+
+        if (!Kernel_mutex_lock(current_task_id))
+            Kernel_yield();
+        else
+            break;
+    }
+}
+
+void Kernel_unlock_mutex(void)
+{
+    uint32_t current_task_id = Kernel_task_get_current_task_id();
+
+    if (!Kernel_mutex_unlock(current_task_id))
+        Kernel_yield();
 }

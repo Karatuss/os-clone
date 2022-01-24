@@ -16,14 +16,16 @@ Make a RTOS clone with [a book](https://www.aladin.co.kr/shop/wproduct.aspx?Item
 - [X] Chapter 4.  Booting
 - [X] Chapter 5.  UART
 - [X] Chapter 6.  Interrupt
-- [ ] Chapter 7.  Timer
-  - *malfunctioned*
-  - should be fixed with a board's guide book.
+- [X] Chapter 7.  Timer
 - [X] Chapter 8.  Task
 - [ ] Chapter 9.  Scheduler
-  - The basic implementation is over,
-  - and `a preemptive scheduler` will be implemented further
+  - [X] Basic implementation
+  - [ ] `Preemptive scheduler` implementation
 - [X] Chapter 10. Context Switching
 - [X] Chapter 11. Event
 - [X] Chapter 12. Messaging
-- [ ] Chapter 13. Synchronization
+- [X] Chapter 13. Synchronization
+
+### Extra Improvement
+
+- [ ] Porting to `ARM Versatile Express for Cortex-A9`
